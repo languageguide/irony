@@ -24,7 +24,7 @@
   <Routines>
     <Routine name="instruction_1">
       <CodeComponent name="code_1">
-        <Param name="Begin Experiment" val="import codecs, os&#10;import utils.CreateStimuli as CS&#10;&#10;def open_codecs(filename):&#10;    return codecs.open(os.path.realpath(filename), encoding='utf-8')&#10;&#10;create_stimuli = CS.CreateStimuli()" valType="extendedCode" updates="constant"/>
+        <Param name="Begin Experiment" val="import utils.CreateStimuli as CS&#10;cs = CS.CreateStimuli()" valType="extendedCode" updates="constant"/>
         <Param name="name" val="code_1" valType="code" updates="None"/>
         <Param name="Begin Routine" val="" valType="extendedCode" updates="constant"/>
         <Param name="End Routine" val="" valType="extendedCode" updates="constant"/>
@@ -37,7 +37,7 @@
         <Param name="name" val="text_1" valType="code" updates="None"/>
         <Param name="wrapWidth" val="" valType="code" updates="constant"/>
         <Param name="color" val="white" valType="str" updates="constant"/>
-        <Param name="text" val="$open_codecs('instructions/first-part.txt').read()" valType="str" updates="constant"/>
+        <Param name="text" val="$cs.open_instructions(&#10;   'instructions/first-part.txt'&#10;).read()" valType="str" updates="constant"/>
         <Param name="stopVal" val="" valType="code" updates="constant"/>
         <Param name="durationEstim" val="" valType="code" updates="None"/>
         <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
@@ -74,7 +74,7 @@
         <Param name="name" val="text_2" valType="code" updates="None"/>
         <Param name="wrapWidth" val="" valType="code" updates="constant"/>
         <Param name="color" val="white" valType="str" updates="constant"/>
-        <Param name="text" val="$open_codecs('instructions/second-part.txt').read()" valType="str" updates="constant"/>
+        <Param name="text" val="$cs.open_instructions(&#10;   'instructions/second-part.txt'&#10;).read()" valType="str" updates="constant"/>
         <Param name="stopVal" val="" valType="code" updates="constant"/>
         <Param name="durationEstim" val="" valType="code" updates="None"/>
         <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
@@ -106,7 +106,7 @@
       <CodeComponent name="code_2">
         <Param name="Begin Experiment" val="" valType="extendedCode" updates="constant"/>
         <Param name="name" val="code_2" valType="code" updates="None"/>
-        <Param name="Begin Routine" val="import utils.CreateStimuli as CS&#10;&#10;create_stimuli.createStoriesFromResponse(response1_file)" valType="extendedCode" updates="constant"/>
+        <Param name="Begin Routine" val="cs.createStoriesFromResponse()" valType="extendedCode" updates="constant"/>
         <Param name="End Routine" val="" valType="extendedCode" updates="constant"/>
         <Param name="End Experiment" val="" valType="extendedCode" updates="constant"/>
         <Param name="Each Frame" val="" valType="extendedCode" updates="constant"/>
@@ -294,7 +294,7 @@
         <Param name="store" val="last key" valType="str" updates="constant"/>
       </KeyboardComponent>
       <CodeComponent name="code">
-        <Param name="Begin Experiment" val="uui_check = 0&#10;response1_file = 'data/responses1.out'&#10;&#10;if os.path.isfile(response1_file):&#10;    os.remove(response1_file)&#10;&#10;def record_answer():&#10;    global uui_check, response1_file&#10;    ouptup_file = open(response1_file, 'a')&#10;    if uui_check == uid :&#10;        return;&#10;    else:&#10;        uui_check = uid&#10;    try:&#10;        _string = str(uid) + ',' + str(key_resp_1.keys) + '\n'&#10;        ouptup_file.write(_string)&#10;    finally:&#10;        ouptup_file.close()&#10;&#10;" valType="extendedCode" updates="constant"/>
+        <Param name="Begin Experiment" val="def record_answer():&#10;    cs.record_answer(uid, key_resp_1.keys)&#10;" valType="extendedCode" updates="constant"/>
         <Param name="name" val="code" valType="code" updates="None"/>
         <Param name="Begin Routine" val="" valType="extendedCode" updates="constant"/>
         <Param name="End Routine" val="" valType="extendedCode" updates="constant"/>
