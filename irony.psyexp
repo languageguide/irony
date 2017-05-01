@@ -37,7 +37,7 @@
         <Param name="name" val="text_1" valType="code" updates="None"/>
         <Param name="wrapWidth" val="" valType="code" updates="constant"/>
         <Param name="color" val="white" valType="str" updates="constant"/>
-        <Param name="text" val="$cs.open_instructions(&#10;   'instructions/first-part.txt'&#10;).read()" valType="str" updates="constant"/>
+        <Param name="text" val="$cs.getInstructions(&#10;   'first-part.txt'&#10;)" valType="str" updates="constant"/>
         <Param name="stopVal" val="" valType="code" updates="constant"/>
         <Param name="durationEstim" val="" valType="code" updates="None"/>
         <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
@@ -74,7 +74,7 @@
         <Param name="name" val="text_2" valType="code" updates="None"/>
         <Param name="wrapWidth" val="" valType="code" updates="constant"/>
         <Param name="color" val="white" valType="str" updates="constant"/>
-        <Param name="text" val="$cs.open_instructions(&#10;   'instructions/second-part.txt'&#10;).read()" valType="str" updates="constant"/>
+        <Param name="text" val="$cs.getInstructions(&#10;   'second-part.txt'&#10;)" valType="str" updates="constant"/>
         <Param name="stopVal" val="" valType="code" updates="constant"/>
         <Param name="durationEstim" val="" valType="code" updates="None"/>
         <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
@@ -294,7 +294,7 @@
         <Param name="store" val="last key" valType="str" updates="constant"/>
       </KeyboardComponent>
       <CodeComponent name="code">
-        <Param name="Begin Experiment" val="def record_answer():&#10;    cs.record_answer(uid, key_resp_1.keys)&#10;" valType="extendedCode" updates="constant"/>
+        <Param name="Begin Experiment" val="def record_answer():&#10;    cs.record_answer(uid, context, key_resp_1.keys)&#10;" valType="extendedCode" updates="constant"/>
         <Param name="name" val="code" valType="code" updates="None"/>
         <Param name="Begin Routine" val="" valType="extendedCode" updates="constant"/>
         <Param name="End Routine" val="" valType="extendedCode" updates="constant"/>

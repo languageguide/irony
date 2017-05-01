@@ -1,5 +1,12 @@
-data
-*.py
+# file extensions
+*.pyc
+
+# files
+irony_lastrun.py
+test.py
+
+# directories
 .DS_Store
+data
 stimuli
 
