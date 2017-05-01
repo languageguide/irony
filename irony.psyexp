@@ -106,7 +106,7 @@
       <CodeComponent name="code_2">
         <Param name="Begin Experiment" val="" valType="extendedCode" updates="constant"/>
         <Param name="name" val="code_2" valType="code" updates="None"/>
-        <Param name="Begin Routine" val="cs.createStoriesFromResponse()" valType="extendedCode" updates="constant"/>
+        <Param name="Begin Routine" val="cs.setStoriesFromResponse()" valType="extendedCode" updates="constant"/>
         <Param name="End Routine" val="" valType="extendedCode" updates="constant"/>
         <Param name="End Experiment" val="" valType="extendedCode" updates="constant"/>
         <Param name="Each Frame" val="" valType="extendedCode" updates="constant"/>
