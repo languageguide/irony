@@ -10,12 +10,14 @@ The idea of this piece of code is to create a cvs file (data/stories2.cvs) start
 
 """
 
-import codecs, os, random, csv
+import codecs, os, random, csv, re
 
 class CreateStimuli:
 
     def __init__(self):
 
+        self.MAX_GOOD_STORIES = 8
+        self.FS = ',' # file fields separator
         self.inputFiles = ['./stimuli/stories1.csv', './stimuli/stories2.csv']
         self.outputFiles = ['./data/stories1.out.csv', './data/stories2.out.csv', './data/response.out']
         self.uui_check = -1
@@ -23,17 +25,33 @@ class CreateStimuli:
         self._removeFiles(self.outputFiles)
         self._listOfList = self._getListOfList()
         self._writeFile(self._getPB(), self.outputFiles[0])
-        self._writeFile(self._getPB(), self.outputFiles[1])
+        self._writeFile(self._getPB(storyNum = 2), self.outputFiles[1])
         self._writeFile(self._listOfList, self.outputFiles[0])
 
     def setStoriesFromResponse(self):
+
         goodStories = self.getStoriesFromResponse()
         rows1 = self._getLines(self.inputFiles[0])
+        allStories = self._getLines(self.inputFiles[0])
+        distractors = self._doubleStories(self._getLines(self.inputFiles[1])[1:])
+        random.shuffle(distractors)
         allStories = []
-        for goodStory in goodStories:
-            row1Ls = rows1[self._getInt(goodStory)].split(',')
-            row1Ls[5] = str(self._getRsp(goodStory)) # mark (user response from the first experiment)
-            allStories.append(row1Ls)
+
+        cntDs = 0 # counter distractors
+        cntGS = 0 # counter good stories
+
+        for distractor in distractors:
+            cntDs += 1
+            allStories.append(distractor)
+            if cntDs % 4 == 0:
+                goodStory = goodStories[cntGS]
+
+                row1Ls = rows1[self._getInt(goodStory)].split(self.FS)
+                row1Ls[5] = row1Ls[8 - self._getRsp(goodStory)].rstrip("\n\r") # mark (user response from the first experiment)
+                allStories.append(row1Ls)
+                cntGS += 1
+                if cntGS >= len(goodStories):
+                    break
 
         self._writeFile(allStories, self.outputFiles[1])
 
@@ -51,17 +69,21 @@ class CreateStimuli:
         rows = rows + lines
         random.shuffle(rows)
         for row in rows:
-            list_of_list.append(row.split(","))
+            rowLs = row.split(self.FS)
+            if len(rowLs) > 5:
+                list_of_list.append(row.split(self.FS))
         return list_of_list
 
-    def _getPB(self):
+    def _getPB(self, storyNum = 1):
         pbs = []
         contexts = ['N', 'P']
         random.shuffle(contexts)
         for context in contexts:
             for list in self._listOfList:
-                if (list[1] == "PB" and list[3] == context):
+                if list[1] == 'PB' and list[3] == context:
                     self._listOfList.remove(list)
+                    if storyNum == 2:
+                        list[5] = list[7 + random.choice([0, 1])].rstrip("\n\r")
                     pbs.append(list)
                     break
         return pbs
@@ -73,7 +95,7 @@ class CreateStimuli:
             ouptup_file.write(self._arguments_header)
         try:
             for list in listOfList:
-                ouptup_file.write(','.join(list))
+                ouptup_file.write(self.FS.join(list))
         finally:
             ouptup_file.close()
 
@@ -81,16 +103,16 @@ class CreateStimuli:
     # record_answer (-+) 4 (--) / 4 (+-) 4 (++)
     # record_answer (N1) 4 (N0) / 4 (P0) 4 (P1)
     def getStoriesFromResponse(self):
-        lines = self._getLines(self.outputFiles[2])[3:] # the first three lines are useless because the first-one is the header and the other are PB
+        lines = self._getLines(self.outputFiles[2])[2:] # the first two lines are useless because they are PB
         # random.shuffle(lines)
         contextsVsTargetWords = [['N', 1], ['N', 0], ['P', 0], ['P', 1]]
         goodStories = []
         for ctxVsTW in contextsVsTargetWords:
             for row in lines:
-                rowLs = row.split(',')
+                rowLs = row.split(self.FS)
                 if ctxVsTW[0] == rowLs[1] and ctxVsTW[1] == int(rowLs[2]):
                     goodStories.append(rowLs[0] + '.' + rowLs[2])
-                    if len(goodStories) >= 8:
+                    if len(goodStories) >= self.MAX_GOOD_STORIES:
                         return goodStories
         return goodStories
 
@@ -101,13 +123,17 @@ class CreateStimuli:
         else:
             self.uui_check = uid
         try:
-            _string = str(uid) + ',' + context + ',' + str(key_resp_1) + '\n'
+            _string = str(uid) + self.FS + context + self.FS + str(key_resp_1) + '\n'
             ouptup_file.write(_string)
         finally:
             ouptup_file.close()
 
     def _getLines(self, fileName):
-        return self._openFile(fileName).readlines()
+        # TODODO
+        if len(self._openFile(fileName).readlines()[-1]) > 2:
+            return self._openFile(fileName).readlines()
+        else:
+            return self._openFile(fileName).readlines()[:-1]
 
     def _getInt(self, _string):
         return int(_string.split('.')[0])
@@ -123,6 +149,16 @@ class CreateStimuli:
             if os.path.isfile(file):
                 os.remove(file)
 
+    def _doubleStories(self, stories):
+        doubledStories = []
+        for story in stories:
+            storyLs = story.split(self.FS)
+            for i in range(0, 2):
+                storyLs[5] = storyLs[7 +i].rstrip("\n\r")
+                doubledStories.append(storyLs)
+        return doubledStories
+
     #used by test.py
     def fakeResponse(self, data):
-        self._writeFile(data, self.outputFiles[2])
+        for responses in data:
+            self.record_answer(responses[0], responses[1], responses[2])

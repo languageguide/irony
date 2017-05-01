@@ -5,12 +5,12 @@
     <Param name="Monitor" val="testMonitor" valType="str" updates="None"/>
     <Param name="Enable Escape" val="True" valType="bool" updates="None"/>
     <Param name="color" val="$[0,0,0]" valType="str" updates="None"/>
-    <Param name="Window size (pixels)" val="[1024, 768]" valType="code" updates="None"/>
+    <Param name="Window size (pixels)" val="[1280, 800]" valType="code" updates="None"/>
     <Param name="Full-screen window" val="True" valType="bool" updates="None"/>
     <Param name="colorSpace" val="rgb" valType="str" updates="None"/>
-    <Param name="Experiment info" val="{'participant':'', 'session':'001'}" valType="code" updates="None"/>
+    <Param name="Experiment info" val="{u'session': u'001', u'participant': u''}" valType="code" updates="None"/>
     <Param name="Save csv file" val="False" valType="bool" updates="None"/>
-    <Param name="Show info dlg" val="True" valType="bool" updates="None"/>
+    <Param name="Show info dlg" val="False" valType="bool" updates="None"/>
     <Param name="Save wide csv file" val="True" valType="bool" updates="None"/>
     <Param name="Save psydat file" val="True" valType="bool" updates="None"/>
     <Param name="expName" val="main" valType="str" updates="None"/>
@@ -149,6 +149,43 @@
         <Param name="store" val="nothing" valType="str" updates="constant"/>
       </KeyboardComponent>
     </Routine>
+    <Routine name="target_word">
+      <TextComponent name="text_5">
+        <Param name="opacity" val="1" valType="code" updates="constant"/>
+        <Param name="colorSpace" val="rgb" valType="str" updates="constant"/>
+        <Param name="name" val="text_5" valType="code" updates="None"/>
+        <Param name="wrapWidth" val="" valType="code" updates="constant"/>
+        <Param name="color" val="white" valType="str" updates="constant"/>
+        <Param name="text" val="$missingTW" valType="str" updates="set every repeat"/>
+        <Param name="stopVal" val="" valType="code" updates="constant"/>
+        <Param name="durationEstim" val="" valType="code" updates="None"/>
+        <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
+        <Param name="flip" val="" valType="str" updates="constant"/>
+        <Param name="startEstim" val="" valType="code" updates="None"/>
+        <Param name="units" val="from exp settings" valType="str" updates="None"/>
+        <Param name="startType" val="time (s)" valType="str" updates="None"/>
+        <Param name="ori" val="0" valType="code" updates="constant"/>
+        <Param name="stopType" val="duration (s)" valType="str" updates="None"/>
+        <Param name="startVal" val="0.0" valType="code" updates="None"/>
+        <Param name="font" val="Arial" valType="str" updates="constant"/>
+        <Param name="letterHeight" val="0.1" valType="code" updates="constant"/>
+      </TextComponent>
+      <KeyboardComponent name="key_resp_6">
+        <Param name="correctAns" val="" valType="str" updates="constant"/>
+        <Param name="storeCorrect" val="False" valType="bool" updates="constant"/>
+        <Param name="name" val="key_resp_6" valType="code" updates="None"/>
+        <Param name="stopVal" val="" valType="code" updates="constant"/>
+        <Param name="durationEstim" val="" valType="code" updates="None"/>
+        <Param name="forceEndRoutine" val="True" valType="bool" updates="constant"/>
+        <Param name="startEstim" val="" valType="code" updates="None"/>
+        <Param name="discard previous" val="True" valType="bool" updates="constant"/>
+        <Param name="startType" val="time (s)" valType="str" updates="None"/>
+        <Param name="allowedKeys" val="'space'" valType="code" updates="constant"/>
+        <Param name="stopType" val="duration (s)" valType="str" updates="None"/>
+        <Param name="startVal" val="0.0" valType="code" updates="None"/>
+        <Param name="store" val="nothing" valType="str" updates="constant"/>
+      </KeyboardComponent>
+    </Routine>
     <Routine name="argument">
       <TextComponent name="argument_1">
         <Param name="opacity" val="1" valType="code" updates="constant"/>
@@ -227,7 +264,7 @@
         <Param name="name" val="text" valType="code" updates="None"/>
         <Param name="wrapWidth" val="" valType="code" updates="constant"/>
         <Param name="color" val="white" valType="str" updates="constant"/>
-        <Param name="text" val="vero (1)      false(0)" valType="str" updates="constant"/>
+        <Param name="text" val="SI (1)           NO(0)" valType="str" updates="constant"/>
         <Param name="stopVal" val="" valType="code" updates="constant"/>
         <Param name="durationEstim" val="" valType="code" updates="None"/>
         <Param name="pos" val="[0, 0]" valType="code" updates="constant"/>
@@ -314,7 +351,7 @@
       <Param name="nReps" val="1" valType="code" updates="None"/>
       <Param name="endPoints" val="[0, 1]" valType="num" updates="None"/>
       <Param name="conditions" val="[{'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'P', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria adora la cucina italiana. Sua madre ha preparato un piatto di spaghetti al sugo per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}, {'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'N', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria odia la cucina a base di pesce. Sua madre ha preparato del salmone norvegese per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}]" valType="str" updates="None"/>
-      <Param name="Selected rows" val="0:5" valType="str" updates="None"/>
+      <Param name="Selected rows" val="0:3" valType="str" updates="None"/>
     </LoopInitiator>
     <Routine name="fixation_point"/>
     <Routine name="argument"/>
@@ -322,18 +359,19 @@
     <LoopTerminator name="trials"/>
     <Routine name="instruction_2"/>
     <LoopInitiator loopType="TrialHandler" name="trials_2">
-      <Param name="conditionsFile" val="stimuli/stories1.csv" valType="str" updates="None"/>
+      <Param name="conditionsFile" val="data/stories2.out.csv" valType="str" updates="None"/>
       <Param name="name" val="trials_2" valType="code" updates="None"/>
       <Param name="isTrials" val="True" valType="bool" updates="None"/>
       <Param name="random seed" val="" valType="code" updates="None"/>
-      <Param name="loopType" val="random" valType="str" updates="None"/>
+      <Param name="loopType" val="sequential" valType="str" updates="None"/>
       <Param name="nReps" val="1" valType="code" updates="None"/>
       <Param name="endPoints" val="[0, 1]" valType="num" updates="None"/>
-      <Param name="conditions" val="[{'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'N', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria odia la cucina a base di pesce. Sua madre ha preparato del salmone norvegese per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}, {'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'P', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria adora la cucina italiana. Sua madre ha preparato un piatto di spaghetti al sugo per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}, {'targetWordP': u'SPIGLIATA', 'sentenceBlock': u'PB', 'context': u'N', 'contextId': 2, 'gender': u'M', 'sentence': u'Giuseppe e Elisabetta sono andati a ballare. Elisabetta \xe8 caduta 6 volte. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'IMBRANATA', 'mark': False}, {'targetWordP': u'SPIGLIATA', 'sentenceBlock': u'PB', 'context': u'P', 'contextId': 2, 'gender': u'M', 'sentence': u'Giuseppe e Elisabetta sono andati a ballare. Elisabetta ha fatto 6 piroette. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'IMBRANATA', 'mark': False}, {'targetWordP': u'BOLLENTE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 1, 'gender': u'M', 'sentence': u'Giuseppe e Francesco vogliono nuotare. Sfortunatamente la temperatura dell\u2019acqua \xe8 di 10C. Giuseppe dice : \u201c\xc8 davvero _____ \u201d ', 'targetWordN': u'GLACIALE', 'mark': False}, {'targetWordP': u'BOLLENTE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 1, 'gender': u'M', 'sentence': u'Giuseppe e Francesco vogliono nuotare. Fortunatamente la temperatura dell\u2019acqua \xe8 di 25C. Giuseppe dice : \u201c\xc8 davvero _____ \u201d ', 'targetWordN': u'GLACIALE', 'mark': False}, {'targetWordP': u'GRAZIOSO', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 4, 'gender': u'F', 'sentence': u'Paolo regala un braccialetto orribile alla sua ragazza - Maria. \xc8 di cattiva qualit\xe0 e di cattivo gusto. Maria dice: \u201c\xc8 veramente _________\u201d', 'targetWordN': u'SCHIFOSO', 'mark': False}, {'targetWordP': u'GRAZIOSO', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 4, 'gender': u'F', 'sentence': u'Paolo regala un nuovo braccialetto alla sua ragazza - Maria. \xc8 molto carino e ha molte pietre preziose. Maria dice: \u201c\xc8 veramente _________\u201d', 'targetWordN': u'SCHIFOSO', 'mark': False}, {'targetWordP': u'ATTENTO', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 5, 'gender': u'F', 'sentence': u'Maria e Daniele rivedono la lezione insieme. Daniele ha dimenticato quasi tutto. Maria dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'SBADATO', 'mark': False}, {'targetWordP': u'ATTENTO', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 5, 'gender': u'F', 'sentence': u'Maria e Daniele rivedono  la lezione insieme. Daniele non ha dimenticato niente. Maria dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'SBADATO', 'mark': False}, {'targetWordP': u'AFFABILE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 6, 'gender': u'F', 'sentence': u'Maria ha chiesto a Pietro di aiutarla a traslocare. Pietro risponde che non ha tempo da perdere. Maria dice: \u201cSei cos\xec _________\u201d ', 'targetWordN': u'SCORTESE', 'mark': False}, {'targetWordP': u'AFFABILE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 6, 'gender': u'F', 'sentence': u'Maria ha chiesto a Pietro di aiutarla a traslocare. Pietro risponde subito che lo far\xe0 molto volentieri. Maria dice: \u201cSei cos\xec _________\u201d ', 'targetWordN': u'SCORTESE', 'mark': False}, {'targetWordP': u'STUPENDO', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 7, 'gender': u'M', 'sentence': u'Elisabetta racconta a Giuseppe che ha danzato a teatro. Nessuno aveva voluto andare a vederla. Giuseppe dice: \u201c Era davvero _________ \u201d ', 'targetWordN': u'TREMENDO', 'mark': False}, {'targetWordP': u'STUPENDO', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 7, 'gender': u'M', 'sentence': u'Elisabetta racconta a Giuseppe che ha danzato a teatro. Molti avevano voluto il suo autografo. Giuseppe dice: \u201c Era davvero _________ \u201d', 'targetWordN': u'TREMENDO', 'mark': False}, {'targetWordP': u'PIACEVOLE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 9, 'gender': u'M', 'sentence': u'Federica e Giuseppe sono andati al cinema. Il film era noioso e triste. Giuseppe dice: \u201cEra cos\xec _________\u201d', 'targetWordN': u'TERRIBILE', 'mark': False}, {'targetWordP': u'PIACEVOLE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 9, 'gender': u'M', 'sentence': u'Federica e Giuseppe sono andati al cinema. Il film era appassionante e divertente. Giuseppe dice: \u201cEra cos\xec _________\u201d', 'targetWordN': u'TERRIBILE', 'mark': False}, {'targetWordP': u'POSITIVO', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 10, 'gender': u'F', 'sentence': u'Maria e Francesco parlano del loro futuro. Francesco \xe8 convinto che tutto andr\xe0 male. Maria dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'NEGATIVO', 'mark': False}, {'targetWordP': u'POSITIVO', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 10, 'gender': u'F', 'sentence': u'Maria e Francesco parlano del loro futuro. Francesco \xe8 convinto che tutto andr\xe0 bene. Maria dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'NEGATIVO', 'mark': False}, {'targetWordP': u'GENTILE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 12, 'gender': u'F', 'sentence': u'Nicola e Maria sono nella metro e una persona anziana entra. Nicola la spinge per sedersi prima di lei. Maria dice: \u201c Sei cos\xec _________\u201d', 'targetWordN': u'BRUTALE', 'mark': False}, {'targetWordP': u'GENTILE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 12, 'gender': u'F', 'sentence': u'Nicola e Maria sono nella metro e una persona anziana entra. Nicola si alza e le lascia il posto. Maria dice: \u201c Sei cos\xec _________\u201d', 'targetWordN': u'BRUTALE', 'mark': False}, {'targetWordP': u'PUNTUALE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 13, 'gender': u'M', 'sentence': u'Giuseppe chiede la strada a Luciano. Gli risponde in modo molto vago e impreciso. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'GENERICO', 'mark': False}, {'targetWordP': u'PUNTUALE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 13, 'gender': u'M', 'sentence': u'Giuseppe chiede la strada a Luciano. Gli d\xe0 una risposta molto precisa e dettagliata. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'GENERICO', 'mark': False}, {'targetWordP': u'PRECISA', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 14, 'gender': u'M', 'sentence': u'Maria ha inviato a Giuseppe la sua relazione. Presentava delle idee incoerenti e mal organizzate nell\u2019insieme. Giuseppe dice: \u201c\xc8 cos\xec _________\u201d', 'targetWordN': u'CONFUSA', 'mark': False}, {'targetWordP': u'PRECISA', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 14, 'gender': u'M', 'sentence': u'Maria ha inviato a Giuseppe la sua relazione. Presentava delle idee ben articolate e sviluppate nei dettagli. Giuseppe dice: \u201c\xc8 cos\xec _________\u201d', 'targetWordN': u'CONFUSA', 'mark': False}, {'targetWordP': u'CAPACE', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 15, 'gender': u'M', 'sentence': u'Maria ha partecipato a una gara di salto in alto. Purtroppo \xe8 arrivata ultima. Giuseppe dice: \u201cSei cos\xec _________\u201d ', 'targetWordN': u'SCARSA', 'mark': False}, {'targetWordP': u'CAPACE', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 15, 'gender': u'M', 'sentence': u'Maria ha partecipato a una gara di salto in alto. \xc8 arrivata per prima. Giuseppe dice: \u201cSei cos\xec _________\u201d ', 'targetWordN': u'SCARSA', 'mark': False}, {'targetWordP': u'RISPETTOSA', 'sentenceBlock': u'T', 'context': u'N', 'contextId': 16, 'gender': u'F', 'sentence': u'Anna presenta un\u2019amica a Maria. L\u2019amica \xe8 molto maleducata e scortese con Maria. Maria dice: \u201c\xc8 davvero _________\u201d', 'targetWordN': u'FASTIDIOSA', 'mark': False}, {'targetWordP': u'RISPETTOSA', 'sentenceBlock': u'T', 'context': u'P', 'contextId': 16, 'gender': u'F', 'sentence': u'Anna presenta un\u2019amica a Maria. L\u2019amica \xe8 molto sorridente e allegra con Maria. Maria dice: \u201c\xc8 davvero _________\u201d', 'targetWordN': u'FASTIDIOSA', 'mark': False}]" valType="str" updates="None"/>
-      <Param name="Selected rows" val="0" valType="str" updates="None"/>
+      <Param name="conditions" val="[{'contextId': 2, 'uid': 4, 'sentence': u'Giuseppe e Elisabetta sono andati a ballare. Elisabetta ha fatto 6 piroette. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'gender': u'M', 'targetWordN': u'IMBRANATA', 'mark': u'SPIGLIATA', 'targetWordP': u'SPIGLIATA', 'sentenceBlock': u'PB', 'context': u'P'}, {'contextId': 1, 'uid': 1, 'sentence': u'Maria odia la cucina a base di pesce. Sua madre ha preparato del salmone norvegese per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'gender': u'F', 'targetWordN': u'DISGUSTOSO', 'mark': u'APPETITOSO', 'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'N'}, {'contextId': 10, 'uid': 17, 'sentence': u'Maria e Francesco parlano del loro futuro. Francesco \xe8 convinto che tutto andr\xe0 male. Maria dice: \u201cSei cos\xec _________\u201d', 'gender': u'F', 'targetWordN': u'NEGATIVO', 'mark': u'POSITIVO', 'targetWordP': u'POSITIVO', 'sentenceBlock': u'T', 'context': u'N'}, {'contextId': 9, 'uid': 15, 'sentence': u'Federica e Giuseppe sono andati al cinema. Il film era noioso e triste. Giuseppe dice: \u201cEra cos\xec _________\u201d', 'gender': u'M', 'targetWordN': u'TERRIBILE', 'mark': u'PIACEVOLE', 'targetWordP': u'PIACEVOLE', 'sentenceBlock': u'T', 'context': u'N'}]" valType="str" updates="None"/>
+      <Param name="Selected rows" val="0:3" valType="str" updates="None"/>
     </LoopInitiator>
     <Routine name="fixation_point"/>
     <Routine name="argument_2"/>
+    <Routine name="target_word"/>
     <Routine name="response_2"/>
     <LoopTerminator name="trials_2"/>
   </Flow>
