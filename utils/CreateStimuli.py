@@ -108,10 +108,14 @@ class CreateStimuli:
         contextsVsTargetWords = [['N', 1], ['N', 0], ['P', 0], ['P', 1]]
         goodStories = []
         for ctxVsTW in contextsVsTargetWords:
+            countCtxVsTW = 0
             for row in lines:
                 rowLs = row.split(self.FS)
                 if ctxVsTW[0] == rowLs[1] and ctxVsTW[1] == int(rowLs[2]):
+                    if countCtxVsTW == 4:
+                        continue
                     goodStories.append(rowLs[0] + '.' + rowLs[2])
+                    countCtxVsTW += 1
                     if len(goodStories) >= self.MAX_GOOD_STORIES:
                         return goodStories
         return goodStories
@@ -129,7 +133,7 @@ class CreateStimuli:
             ouptup_file.close()
 
     def _getLines(self, fileName):
-        # TODODO
+        # TODO
         if len(self._openFile(fileName).readlines()[-1]) > 2:
             return self._openFile(fileName).readlines()
         else:
