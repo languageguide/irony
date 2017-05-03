@@ -6,7 +6,14 @@ This program has been tested with PsychoPy2 version 1.81.00. PsychoPy can be ins
 
 ## Installation
 
-Get the stimuli from ....
+Get the zip file stimuli from the author. 
+Clone or download the [irony experiment](https://github.com/languageguide/irony/archive/master.zip).
 
-    cd irony
+    unzip master.zip
+    cp stimuli.zip master
+    cd master
     unzip stimuli.zip
+
+## Instruction
+
+To resume or to end the experiment press the "p" key.
