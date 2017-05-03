@@ -596,7 +596,7 @@
       <Param name="nReps" val="1" valType="code" updates="None"/>
       <Param name="endPoints" val="[0, 1]" valType="num" updates="None"/>
       <Param name="conditions" val="[{'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'P', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria adora la cucina italiana. Sua madre ha preparato un piatto di spaghetti al sugo per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}, {'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'context': u'N', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria odia la cucina a base di pesce. Sua madre ha preparato del salmone norvegese per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': False}]" valType="str" updates="None"/>
-      <Param name="Selected rows" val="0:3" valType="str" updates="None"/>
+      <Param name="Selected rows" val="" valType="str" updates="None"/>
     </LoopInitiator>
     <Routine name="fixation_point"/>
     <Routine name="argument"/>
@@ -613,7 +613,7 @@
       <Param name="nReps" val="1" valType="code" updates="None"/>
       <Param name="endPoints" val="[0, 1]" valType="num" updates="None"/>
       <Param name="conditions" val="[{'targetWordP': u'SPIGLIATA', 'sentenceBlock': u'PB', 'uid': 4, 'context': u'P', 'contextId': 2, 'gender': u'M', 'sentence': u'Giuseppe e Elisabetta sono andati a ballare. Elisabetta ha fatto 6 piroette. Giuseppe dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'IMBRANATA', 'mark': u'SPIGLIATA'}, {'targetWordP': u'APPETITOSO', 'sentenceBlock': u'PB', 'uid': 1, 'context': u'N', 'contextId': 1, 'gender': u'F', 'sentence': u'Maria odia la cucina a base di pesce. Sua madre ha preparato del salmone norvegese per cena. Maria dice : \u201c\xc8 cos\xec ________\u201d ', 'targetWordN': u'DISGUSTOSO', 'mark': u'APPETITOSO'}, {'targetWordP': u'POSITIVO', 'sentenceBlock': u'T', 'uid': 17, 'context': u'N', 'contextId': 10, 'gender': u'F', 'sentence': u'Maria e Francesco parlano del loro futuro. Francesco \xe8 convinto che tutto andr\xe0 male. Maria dice: \u201cSei cos\xec _________\u201d', 'targetWordN': u'NEGATIVO', 'mark': u'POSITIVO'}, {'targetWordP': u'PIACEVOLE', 'sentenceBlock': u'T', 'uid': 15, 'context': u'N', 'contextId': 9, 'gender': u'M', 'sentence': u'Federica e Giuseppe sono andati al cinema. Il film era noioso e triste. Giuseppe dice: \u201cEra cos\xec _________\u201d', 'targetWordN': u'TERRIBILE', 'mark': u'PIACEVOLE'}]" valType="str" updates="None"/>
-      <Param name="Selected rows" val="0:8" valType="str" updates="None"/>
+      <Param name="Selected rows" val="" valType="str" updates="None"/>
     </LoopInitiator>
     <Routine name="fixation_point"/>
     <Routine name="argument_2"/>
