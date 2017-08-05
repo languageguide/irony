@@ -10,3 +10,6 @@ test.py
 data
 stimuli
 
+# sqlite files
+analysis/*.db
+
