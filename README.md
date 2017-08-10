@@ -17,3 +17,7 @@ Clone or download the [irony experiment](https://github.com/languageguide/irony/
 ## Instruction
 
 To resume or to end the experiment press the "p" key.
+
+## Entity Relation Diagram
+
+![Entity Relation Diagram](images/erd.png)
