@@ -26,9 +26,9 @@ class Sentence (Base):
     context = Column(String(1), nullable = False) # P-N
 
 # Create an engine that stores data in the local directory's
-file_name = 'irony.db'
-os.remove(file_name) if os.path.exists(file_name) else None
-engine = create_engine('///'.join(['sqlite:', file_name]))
+db_name = 'irony.db'
+os.remove(db_name) if os.path.exists(db_name) else None
+engine = create_engine('///'.join(['sqlite:', db_name]))
 
 # Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
 Base.metadata.create_all(engine)
