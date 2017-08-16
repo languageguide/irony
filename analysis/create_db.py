@@ -7,9 +7,9 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-class Person (Base):
-    __tablename__ = 'person'
-    id = Column(Integer, primary_key = True)
+class User (Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key = True, autoincrement = True)
     age = Column(Integer, nullable = False)
     hand = Column(String(1), nullable = False) # D-S
     gender = Column(String(1), nullable = False) # TODO fix ENUM type in sqlalchemy - M-F
