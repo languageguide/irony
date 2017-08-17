@@ -13,7 +13,6 @@ class User (Base):
     age = Column(Integer, nullable = False)
     hand = Column(String(1), nullable = False) # D-S
     gender = Column(String(1), nullable = False) # TODO fix ENUM type in sqlalchemy - M-F
-    file_name = Column(String(250), nullable = False) # The file name from where the data are taken
 
 class Sentence (Base):
     __tablename__ = 'sentence'

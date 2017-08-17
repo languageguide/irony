@@ -1,57 +1,44 @@
 # Tested with Python 2.7.10
-import xlrd
+import xlrd, glob
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from create_db import User, Base
 
 class FeedDB:
 
-    def __init__(self, db_name):
-        # TODO - the sqlite file should be taken from a configuration file
-        engine = create_engine('///'.join(['sqlite:', db_name]))
-        # Bind the engine to the metadata of the Base class so that the
-        # declaratives can be accessed through a DBSession instance
+    def __init__(self, pathname, db_name):
+        self.db_name = db_name
+        self.pathname = pathname
+        self.set_session()
+        self.file_objects = list(map((lambda file: xlrd.open_workbook(file)), self.get_files()))
+        self.set_users()
+
+    def set_session(self):
+        # TODO - the sqlite file should be taken from a configuration file since it appears in create_db.py, too.
+        engine = create_engine('///'.join(['sqlite:', self.db_name]))
         Base.metadata.bind = engine
         DBSession = sessionmaker(bind=engine)
-        # A DBSession() instance establishes all conversations with the database
-        # and represents a "staging zone" for all the objects loaded into the
-        # database session object. Any change made against the objects in the
-        # session won't be persisted into the database until you call
-        # session.commit(). If you're not happy about the changes, you can
-        # revert all of them back to the last commit by calling
-        # session.rollback()
         self.session = DBSession()
-        self.pathname = '../data/*.xlsx'
-
-        files = self.get_files()[0:3]
-        for file in files:
-            self.get_file_object(file)
 
     def get_cell_value(self, sheet, row, col):
         return sheet.cell_value(rowx = row - 1, colx = col - 1)
 
-    def get_file_object(self, file):
-        file_object = xlrd.open_workbook(file)
-        print "The number of worksheets is", file_object.nsheets
-        print "Worksheet name(s):", file_object.sheet_names()
-        self.set(self.get_user(file_object.sheet_by_index(0), file))
-
     def get_files(self):
         # It returns a list with the data xlsx files
-        import glob
-        return glob.glob(self.pathname)
+        return glob.glob(self.pathname)[0:5]
 
-    def get_user(self, sheet, file):
+    def get_user(self, sheet):
         age = self.get_cell_value(sheet, 31, 2)
         hand = self.get_cell_value(sheet, 34, 2)
         gender = self.get_cell_value(sheet, 35, 2)
-        print age
-        # Insert a user in the user table
-        return User(age = age, hand = hand, gender = gender, file_name = file)
+        return User(age = age, hand = hand, gender = gender)
 
     def set(self, data):
         self.session.add(data)
         self.session.commit()
 
+    def set_users(self):
+        for file_object in self.file_objects:
+            self.set(self.get_user(file_object.sheet_by_index(0)))
 
-feedDB = FeedDB('irony.db')
+feedDB = FeedDB('../data/*.xlsx', 'irony.db')
