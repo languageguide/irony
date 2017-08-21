@@ -32,7 +32,7 @@ class FeedDB:
 
     def __get_stimuli(self, row):
         id = int(row['uid'])
-        sentence = row['sentence']
+        sentence = row['sentence'].decode('utf-8')
         sentence_block = row['sentenceBlock']
         context = row['context']
         gender = row['gender']
