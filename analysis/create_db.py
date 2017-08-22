@@ -14,10 +14,10 @@ class User (Base):
     hand = Column(String(1), nullable = False) # D-S
     gender = Column(String(1), nullable = False) # TODO fix ENUM type in sqlalchemy - M-F
 
-class Sentence (Base):
-    __tablename__ = 'sentence'
+class Stimuli (Base):
+    __tablename__ = 'stimuli'
     id = Column(Integer, primary_key = True)
-    phrase = Column(String(250), nullable = False)
+    sentence = Column(String(250), nullable = False)
     gender = Column(String(1), nullable = False) # M-F
     target_word_n = Column(String(20), nullable = False)
     target_word_p = Column(String(20), nullable = False)
