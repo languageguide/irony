@@ -2,7 +2,7 @@
 import xlrd, glob
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from create_db import Base, User, Stimuli, Trials1
+from create_db import Base, User, Stimuli, Trials1, Trials2
 
 class FeedDB:
 
@@ -23,7 +23,7 @@ class FeedDB:
 
     def __get_files(self, pathname):
         # It returns a list with the data xlsx files
-        return glob.glob(pathname)[0:2]
+        return glob.glob(pathname)
 
     def __get_user(self, sheet, user_id):
         age = self.__get_cell_value(sheet, 31, 2)
@@ -49,6 +49,14 @@ class FeedDB:
         user_time = self.__get_cell_value(sheet, nrow, 15)
         return Trials1(user_id = user_id, stimuli_id = stimuli_id, user_response = user_response, user_time = user_time)
 
+    def __get_trials2(self, sheet, user_id, nrow):
+        user_id = user_id
+        stimuli_id = int(self.__get_cell_value(sheet, nrow, 3))
+        user_response = 'A' if self.__get_cell_value(sheet, nrow, 11) == "'1'" else 'NA'
+        user_time = self.__get_cell_value(sheet, nrow, 12)
+        missing_TW = self.__get_cell_value(sheet, nrow, 1)
+        return Trials2(user_id = user_id, stimuli_id = stimuli_id, user_response = user_response, user_time = user_time, missing_TW = missing_TW)
+
     def __set(self, data):
         self.session.add(data)
         self.session.commit()
@@ -63,6 +71,11 @@ class FeedDB:
             for rx in xrange(2, nrows + 1):
                 self.__set(self.__get_trials1(sheet, user_id, rx))
 
+    def set_trials2(self, nrows = 43):
+        for user_id, file_object in enumerate(self.file_objects):
+            sheet = file_object.sheet_by_index(1)
+            for rx in xrange(2, nrows + 1):
+                self.__set(self.__get_trials2(sheet, user_id, rx))
 
     def set_stumuli(self, pathname):
         import csv
@@ -74,5 +87,6 @@ class FeedDB:
 feedDB = FeedDB('irony.db', '../data/*.xlsx')
 feedDB.set_users()
 feedDB.set_trials1()
+feedDB.set_trials2()
 feedDB.set_stumuli('../stimuli/stories1.csv')
 feedDB.set_stumuli('../stimuli/stories2.csv')
