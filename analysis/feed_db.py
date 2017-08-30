@@ -39,15 +39,15 @@ class FeedDB:
         gender = row['gender']
         target_word_p = row['targetWordP']
         target_word_n = row['targetWordN']
-        # TODO Apply the spread operator
+        # TODO Apply the spread operator - deal with functions having long list of arguments?
         return Stimuli(id = id, sentence = sentence, sentence_block = sentence_block, context = context, gender = gender, target_word_p = target_word_p, target_word_n = target_word_n)
 
     def __get_trials1(self, sheet, user_id, nrow):
         user_id = user_id
-        sentence_id = int(self.__get_cell_value(sheet, nrow, 3))
-        user_response = 'A' if self.__get_cell_value(sheet, nrow, 14).replace('\'', '') == '1' else 'NA'
+        stimuli_id = int(self.__get_cell_value(sheet, nrow, 3))
+        user_response = 'A' if self.__get_cell_value(sheet, nrow, 14) == "'1'" else 'NA'
         user_time = self.__get_cell_value(sheet, nrow, 15)
-        return Trials1(user_id = user_id, sentence_id = sentence_id, user_response = user_response, user_time = user_time)
+        return Trials1(user_id = user_id, stimuli_id = stimuli_id, user_response = user_response, user_time = user_time)
 
     def __set(self, data):
         self.session.add(data)
@@ -74,5 +74,5 @@ class FeedDB:
 feedDB = FeedDB('irony.db', '../data/*.xlsx')
 feedDB.set_users()
 feedDB.set_trials1()
-#feedDB.set_stumuli('../stimuli/stories1.csv')
-#feedDB.set_stumuli('../stimuli/stories2.csv')
+feedDB.set_stumuli('../stimuli/stories1.csv')
+feedDB.set_stumuli('../stimuli/stories2.csv')
