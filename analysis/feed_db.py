@@ -1,5 +1,5 @@
 # Tested with Python 2.7.10
-import xlrd, glob
+import xlrd, glob, csv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from create_db import Base, User, Stimuli, Trials1, Trials2
@@ -42,17 +42,18 @@ class FeedDB:
         # TODO Apply the spread operator - deal with functions having long list of arguments?
         return Stimuli(id = id, sentence = sentence, sentence_block = sentence_block, context = context, gender = gender, target_word_p = target_word_p, target_word_n = target_word_n)
 
+    def __get_user_response(self, cell_value):
+        return 'A' if cell_value == "'1'" else 'NA'
+
     def __get_trials1(self, sheet, user_id, nrow):
-        user_id = user_id
         stimuli_id = int(self.__get_cell_value(sheet, nrow, 3))
-        user_response = 'A' if self.__get_cell_value(sheet, nrow, 14) == "'1'" else 'NA'
+        user_response = self.__get_user_response(self.__get_cell_value(sheet, nrow, 14))
         user_time = self.__get_cell_value(sheet, nrow, 15)
         return Trials1(user_id = user_id, stimuli_id = stimuli_id, user_response = user_response, user_time = user_time)
 
     def __get_trials2(self, sheet, user_id, nrow):
-        user_id = user_id
         stimuli_id = int(self.__get_cell_value(sheet, nrow, 3))
-        user_response = 'A' if self.__get_cell_value(sheet, nrow, 11) == "'1'" else 'NA'
+        user_response = self.__get_user_response(self.__get_cell_value(sheet, nrow, 11))
         user_time = self.__get_cell_value(sheet, nrow, 12)
         missing_TW = self.__get_cell_value(sheet, nrow, 1)
         return Trials2(user_id = user_id, stimuli_id = stimuli_id, user_response = user_response, user_time = user_time, missing_TW = missing_TW)
@@ -68,17 +69,16 @@ class FeedDB:
     def set_trials1(self, nrows = 27):
         for user_id, file_object in enumerate(self.file_objects):
             sheet = file_object.sheet_by_index(0)
-            for rx in xrange(2, nrows + 1):
-                self.__set(self.__get_trials1(sheet, user_id, rx))
+            for row in xrange(2, nrows + 1):
+                self.__set(self.__get_trials1(sheet, user_id, row))
 
     def set_trials2(self, nrows = 43):
         for user_id, file_object in enumerate(self.file_objects):
             sheet = file_object.sheet_by_index(1)
-            for rx in xrange(2, nrows + 1):
-                self.__set(self.__get_trials2(sheet, user_id, rx))
+            for row in xrange(2, nrows + 1):
+                self.__set(self.__get_trials2(sheet, user_id, row))
 
     def set_stumuli(self, pathname):
-        import csv
         with open(pathname, 'rb') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
