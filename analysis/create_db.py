@@ -24,6 +24,23 @@ class Stimuli (Base):
     sentence_block = Column(String(5), nullable = False) # PB-T-DISTR
     context = Column(String(1), nullable = False) # P-N
 
+class Trials1 (Base):
+    __tablename__ = 'trials_1'
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable = False)
+    stimuli_id = Column(Integer, ForeignKey('stimuli.id'), nullable = False)
+    user_response = Column(String(2), nullable = False)
+    user_time = Column(Numeric, nullable = False)
+
+class Trials2 (Base):
+    __tablename__ = 'trials_2'
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable = False)
+    stimuli_id = Column(Integer, ForeignKey('stimuli.id'), nullable = False)
+    user_response = Column(String(2), nullable = False)
+    user_time = Column(Numeric, nullable = False)
+    missing_TW = Column(String(20), nullable = False)
+
 # Create an engine that stores data in the local directory's
 db_name = 'irony.db'
 os.remove(db_name) if os.path.exists(db_name) else None
