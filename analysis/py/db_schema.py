@@ -1,5 +1,3 @@
-import os
-import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy import Boolean, Numeric, create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -22,14 +20,15 @@ class Stimuli (Base):
     target_word_n = Column(String(20), nullable = False)
     target_word_p = Column(String(20), nullable = False)
     sentence_block = Column(String(5), nullable = False) # PB-T-DISTR
-    context = Column(String(1), nullable = False) # P-N
+    context = Column(String(1), nullable = False) # P(positive context) N(negative context)
+    irony_type = Column(String(1), nullable = False) # I(ironic) S(sarcastic)
 
 class Trials1 (Base):
     __tablename__ = 'trials_1'
     id = Column(Integer, primary_key = True, autoincrement = True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable = False)
     stimuli_id = Column(Integer, ForeignKey('stimuli.id'), nullable = False)
-    user_response = Column(String(2), nullable = False)
+    user_response = Column(String(2), nullable = False) # PA(positive adjective) NA (negative adjective)
     user_time = Column(Numeric, nullable = False)
 
 class Trials2 (Base):
@@ -37,14 +36,6 @@ class Trials2 (Base):
     id = Column(Integer, primary_key = True, autoincrement = True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable = False)
     stimuli_id = Column(Integer, ForeignKey('stimuli.id'), nullable = False)
-    user_response = Column(String(2), nullable = False)
+    user_response = Column(String(2), nullable = False) 
     user_time = Column(Numeric, nullable = False)
     missing_TW = Column(String(20), nullable = False)
-
-# Create an engine that stores data in the local directory's
-db_name = 'irony.db'
-os.remove(db_name) if os.path.exists(db_name) else None
-engine = create_engine('///'.join(['sqlite:', db_name]))
-
-# Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
-Base.metadata.create_all(engine)

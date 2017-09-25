@@ -1,12 +1,15 @@
 # Tested with Python 2.7.10
-import xlrd, glob, csv
+import xlrd, glob, csv, os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from create_db import Base, User, Stimuli, Trials1, Trials2
+from db_schema import Base, User, Stimuli, Trials1, Trials2
 
 class FeedDB:
 
     def __init__(self, db_name, pathname):
+        os.remove(db_name) if os.path.exists(db_name) else None
+        engine = create_engine('///'.join(['sqlite:', db_name]))
+        Base.metadata.create_all(engine) # Create all tables in the engine. This is equivalent to "Create Table" statements in raw SQL.
         self.file_objects = list(map((lambda file: xlrd.open_workbook(file)), self.__get_files(pathname)))
         self.db_name = db_name
         self.__set_session()
@@ -36,14 +39,15 @@ class FeedDB:
         sentence = row['sentence'].decode('utf-8')
         sentence_block = row['sentenceBlock']
         context = row['context']
+        irony_type = row['ironyType']
         gender = row['gender']
         target_word_p = row['targetWordP']
         target_word_n = row['targetWordN']
         # TODO Apply the spread operator - deal with functions having long list of arguments?
-        return Stimuli(id = id, sentence = sentence, sentence_block = sentence_block, context = context, gender = gender, target_word_p = target_word_p, target_word_n = target_word_n)
+        return Stimuli(id = id, sentence = sentence, sentence_block = sentence_block, context = context, gender = gender, target_word_p = target_word_p, target_word_n = target_word_n, irony_type = irony_type)
 
     def __get_user_response(self, cell_value):
-        return 'A' if cell_value == "'1'" else 'NA'
+        return 'PA' if cell_value == "'1'" else 'NA'
 
     def __get_trials1(self, sheet, user_id, nrow):
         stimuli_id = int(self.__get_cell_value(sheet, nrow, 3))
@@ -84,9 +88,9 @@ class FeedDB:
             for row in reader:
                 self.__set(self.__get_stimuli(row))
 
-feedDB = FeedDB('irony.db', '../data/*.xlsx')
+feedDB = FeedDB('irony.db', '../../data/*.xlsx')
 feedDB.set_users()
 feedDB.set_trials1()
 feedDB.set_trials2()
-feedDB.set_stumuli('../stimuli/stories1.csv')
-feedDB.set_stumuli('../stimuli/stories2.csv')
+feedDB.set_stumuli('../../stimuli/stories1.csv')
+feedDB.set_stumuli('../../stimuli/stories2.csv')
