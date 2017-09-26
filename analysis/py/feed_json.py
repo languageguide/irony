@@ -72,17 +72,17 @@ class FeedJson:
         self.__write_json_file('userResponse.json', self.tr1_resp)
 
     def set_ttest_response(self):
-        # Method to get the t-test between two sample
+        # Method to get the t-test between two samples
         from scipy.stats import ttest_ind
         from itertools import combinations
         import numpy as np
-        tr1_tt = {}
+        tr1_tt = {'data': []}
         for key1 in self.tr1_resp:
             for key2 in self.tr1_resp:
                 if key1 != key2:
-                    print key1, ' vs ',key2
                     t, p = ttest_ind(self.tr1_resp[key1], self.tr1_resp[key2], equal_var=True)
-                    print t, p
+                    tr1_tt['data'].append([key1, key2, float(t), p])
+        self.__write_json_file('ttest.json', tr1_tt)
 
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
