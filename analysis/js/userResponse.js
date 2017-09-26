@@ -3,7 +3,7 @@ $(function() {
     var ctx = document.getElementById("userResponse");
 
     $.getJSON("json/userResponse.json", function (object) {
-        console.log(Object.values(object), Object.keys(object))
+
         var keys = Object.keys(object)
         var values = Object.values(object)
         var myChart = new Chart(ctx, {
