@@ -84,7 +84,49 @@ class FeedJson:
                     tr1_tt['data'].append([key1, key2, float(t), p])
         self.__write_json_file('ttest.json', tr1_tt)
 
+    def set_correct_responses(self):
+        query = text('''
+            SELECT  count(trials_1.user_id), trials_2.user_response = trials_1.user_response AS correct
+            FROM trials_1, trials_2, stimuli
+            WHERE trials_1.user_id = trials_2.user_id and
+            trials_1.stimuli_id = trials_2.stimuli_id
+            and stimuli.id = trials_1.stimuli_id
+            and stimuli.id = trials_2.stimuli_id group by correct;
+        ''')
+        response = {}
+        for row in self.conn.execute(query).fetchall():
+            if row[1] == 0:
+                response['Diff-Resp'] = row[0]
+            else:
+                response['Same-Resp'] = row[0]
+        self.__write_json_file('correctResponse.json', response)
+
+    # TODO merge set_correct_responses_by_context with set_correct_responses
+    def set_correct_responses_by_context(self):
+        query = text('''
+            SELECT  count(trials_1.user_id), context, trials_2.user_response = trials_1.user_response AS correct
+            FROM trials_1, trials_2, stimuli
+            WHERE trials_1.user_id = trials_2.user_id and
+            trials_1.stimuli_id = trials_2.stimuli_id
+            and stimuli.id = trials_1.stimuli_id
+            and stimuli.id = trials_2.stimuli_id group by context, correct;
+        ''')
+        response = {}
+        print self.conn.execute(query).fetchall()
+        for row in self.conn.execute(query).fetchall():
+            if row[2] == 0 and row[1] == 'N':
+                response['Neg-Cont_Diff-Resp'] = row[0]
+            if row[2] == 1 and row[1] == 'N':
+                response['Neg-Cont_Same-Resp'] = row[0]
+            if row[2] == 0 and row[1] == 'P':
+                response['Pos-Cont_Diff-Resp'] = row[0]
+            if row[2] == 1 and row[1] == 'P':
+                response['Pos-Cont_Same-Resp'] = row[0]
+        self.__write_json_file('correctResponseByContext.json', response)
+
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
 feedJson.set_user_response()
 feedJson.set_ttest_response()
+feedJson.set_correct_responses()
+feedJson.set_correct_responses_by_context()
