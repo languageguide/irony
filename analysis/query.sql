@@ -68,3 +68,22 @@ where
 stimuli.context = 'P' and
 stimuli.sentence_block != 'PB'  
 group by user.id;
+
+
+SELECT  context, irony_type, trials_1.user_response, COUNT(trials_1.id)
+FROM trials_1, stimuli, user WHERE
+sentence_block != 'PB' AND
+user.id = trials_1.user_id AND
+age <> '68' AND
+stimuli_id = stimuli.id GROUP BY context, irony_type, trials_1.user_response;
+
+
+SELECT user.id, count(stimuli.id)
+FROM user
+LEFT JOIN trials_1 
+    ON trials_1.user_id = user.id and trials_1.user_response = 'PA'
+LEFT JOIN stimuli ON 
+    stimuli.id = trials_1.stimuli_id and stimuli.context = 'P' 
+    and stimuli.sentence_block != 'PB' AND irony_type = 'S'
+GROUP BY user_id;
+
