@@ -4,4 +4,18 @@ $(function() {
         $('#example').DataTable( object );
 
     });
+
+    $.getJSON('./json/ttestByIronyType.json', function (object) {
+
+        $('#trials1-irony').DataTable( object );
+
+    });
+
+    $.getJSON('./json/ttest_tr1_tr2_ironyType.json', function (object) {
+
+        $('#tr1-tr2-irony').DataTable( object );
+
+    });
+
+    
 });

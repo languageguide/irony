@@ -2,13 +2,11 @@ from db_schema import Base
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import select, text
-import json
-import sys
-import os
+import json, sys, os
+from query import Query
 
 class FeedJson:
     def __init__(self, db_name):
-
         # TODO; you should get the db name from a conf file
         db_file_name = 'irony.db'
         if os.path.isfile(db_file_name):
@@ -21,6 +19,7 @@ class FeedJson:
         DBSession.bind = engine
         session = DBSession()
         self.conn = engine.connect()
+        self.query = Query()
 
     def __write_json_file(self, file_name, json_data):
         directory = '../json'
@@ -38,66 +37,111 @@ class FeedJson:
         }
         return translated_value[value]
 
+    def __get_trials1_header(self, value):
+        translated_value = {
+            'NINA': 'N|I|NA',
+            'NIPA': 'N|I|PA',
+            'NSNA': 'N|S|NA',
+            'NSPA': 'N|S|PA',
+            'PINA': 'P|I|NA',
+            'PIPA': 'P|I|PA',
+            'PSNA': 'P|S|NA',
+            'PSPA': 'P|S|PA'
+        }
+        return translated_value[value]
+
+    def __get_tr1_tr2_header(self, value):
+        translated_value = {
+            '==': 'is positive',
+            '!=': 'is not positive'
+        }
+        return translated_value[value]
+
+    def __get_tr1_tr2_IT_header(self, value):
+        translated_value = {
+            '==I': 'is positive, Ironic',
+            '!=I': 'is not positive, Ironic',
+            '==S': 'is positive, Sarcastic',
+            '!=S': 'is not positive, Sarcastic'
+        }
+        return translated_value[value]
+
     def set_summary(self):
         # query to get the summary
-        query = text('''
-            SELECT stimuli.context, trials_1.user_response , count(stimuli.id)
-            FROM stimuli, trials_1
-            WHERE stimuli.id = trials_1.stimuli_id and stimuli.sentence_block != 'PB'
-            GROUP BY stimuli.context, trials_1.user_response;
-        ''')
         json_data = {}
-        for r in self.conn.execute(query).fetchall():
+        for r in self.conn.execute(self.query.get_summary_trials1()).fetchall():
             json_data[self.__get_summary_value(r[0] + r[1])] = r[2]
         self.__write_json_file('summary.json', json_data)
 
-    def __get_query(self, context, user_response):
-        return '''
-            SELECT user.id, count(stimuli.id)
-            FROM user
-            LEFT JOIN trials_1 ON trials_1.user_id = user.id and trials_1.user_response = '%s'
-            LEFT JOIN stimuli ON stimuli.id = trials_1.stimuli_id and stimuli.context = '%s' and stimuli.sentence_block != 'PB'
-            GROUP BY user_id;
-        ''' % (user_response, context)
+    def set_summary_trials1_by_context_ironyType(self):
+        json_data = {}
+        for r in self.conn.execute(self.query.get_trials1_data_sql()).fetchall():
+            json_data[self.__get_trials1_header(r[0] + r[1] + r[2])] = r[3]
+        self.__write_json_file('trials1_data.json', json_data)
 
-    def set_user_response(self):
+    def get_trials1_response(self):
         # query to get the users' responses divided by stimuli-context and trials_1-user_response
-        self.tr1_resp = {}
+        tr1_resp = {}
         for context in ['P', 'N']:
             for user_response in ['PA', 'NA']:
-                query = self.__get_query(context, user_response)
+                query = self.query.get_trials1_response_sql(context, user_response)
                 # TODO self.conn.execute(query).fetchall() should be a private method
                 tpls = self.conn.execute(query).fetchall()
-                self.tr1_resp[self.__get_summary_value(context + user_response)] = [x[1] for x in tpls]
-        self.__write_json_file('userResponse.json', self.tr1_resp)
+                tr1_resp[self.__get_summary_value(context + user_response)] = [x[1] for x in tpls]
+        self.__write_json_file('userResponse.json', tr1_resp)
+        return tr1_resp
 
-    def set_ttest_response(self):
+    def get_trials1_by_ironyType(self):
+        tr1_resp = {}
+        for context in ['P', 'N']:
+            for user_response in ['PA', 'NA']:
+                for ironyType in ['I', 'S']:
+                    query = self.query.get_trials1_by_ironyType_sql(context, user_response, ironyType)
+                    # TODO self.conn.execute(query).fetchall() should be a private method
+                    tpls = self.conn.execute(query).fetchall()
+                    tr1_resp[self.__get_trials1_header(context + ironyType + user_response)] = [x[1] for x in tpls]
+        self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def get_tr1_tr2_by_TW(self):
+        tr1_resp = {}
+        for missing_TW in ['==', '!=']:
+            query = self.query.get_tr1_tr2_by_TW_sql(missing_TW)
+            print query
+            # TODO self.conn.execute(query).fetchall() should be a private method
+            tpls = self.conn.execute(query).fetchall()
+            tr1_resp[self.__get_tr1_tr2_header(missing_TW)] = [x[1] for x in tpls]
+        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def get_tr1_tr2_by_TW_IT(self):
+        tr1_resp = {}
+        for missing_TW in ['==', '!=']:
+            for irony_type in ['I', 'S']:
+                query = self.query.get_tr1_tr2_by_TW_IT_sql(missing_TW, irony_type)
+                print query
+                # TODO self.conn.execute(query).fetchall() should be a private method
+                tpls = self.conn.execute(query).fetchall()
+                tr1_resp[self.__get_tr1_tr2_IT_header(missing_TW + irony_type)] = [x[1] for x in tpls]
+        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def set_ttest_response(self, series, file_name):
         # Method to get the t-test between two samples
         from scipy.stats import ttest_ind
         from itertools import combinations
         import numpy as np
         tr1_tt = {'data': []}
-        for key1 in self.tr1_resp:
-            for key2 in self.tr1_resp:
+        for key1 in series:
+            for key2 in series:
                 if key1 != key2:
-                    print key1, self.tr1_resp[key1]
-                    print key2, self.tr1_resp[key2]
-                    t, p = ttest_ind(self.tr1_resp[key1], self.tr1_resp[key2], equal_var=True)
-                    print t, p
-                    tr1_tt['data'].append([key1, key2, float(t), p])
-        self.__write_json_file('ttest.json', tr1_tt)
+                    t, p = ttest_ind(series[key1], series[key2], equal_var=True)
+                    tr1_tt['data'].append([key1, key2, round(float(t), 5), round(p, 5)])
+        self.__write_json_file(file_name, tr1_tt)
 
     def set_correct_responses(self):
-        query = text('''
-            SELECT  count(trials_1.user_id), trials_2.user_response = trials_1.user_response AS correct
-            FROM trials_1, trials_2, stimuli
-            WHERE trials_1.user_id = trials_2.user_id and
-            trials_1.stimuli_id = trials_2.stimuli_id
-            and stimuli.id = trials_1.stimuli_id
-            and stimuli.id = trials_2.stimuli_id group by correct;
-        ''')
         response = {}
-        for row in self.conn.execute(query).fetchall():
+        for row in self.conn.execute(self.query.get_correct_responses_sql()).fetchall():
             if row[1] == 0:
                 response['Diff-Resp'] = row[0]
             else:
@@ -106,18 +150,8 @@ class FeedJson:
 
     # TODO merge set_correct_responses_by_context with set_correct_responses
     def set_correct_responses_by_context(self):
-        query = text('''
-            SELECT  count(trials_1.user_id), context, trials_2.user_response = trials_1.user_response AS correct
-            FROM trials_1, trials_2, stimuli
-            WHERE trials_1.user_id = trials_2.user_id
-            and trials_1.stimuli_id = trials_2.stimuli_id
-            and sentence_block != 'PB'
-            and stimuli.id = trials_1.stimuli_id
-            and stimuli.id = trials_2.stimuli_id group by context, correct;
-        ''')
         response = {}
-        print self.conn.execute(query).fetchall()
-        for row in self.conn.execute(query).fetchall():
+        for row in self.conn.execute(self.query.get_correct_responses_by_context_sql()).fetchall():
             if row[2] == 0 and row[1] == 'N':
                 response['Neg-Cont_Diff-Resp'] = row[0]
             if row[2] == 1 and row[1] == 'N':
@@ -130,19 +164,8 @@ class FeedJson:
 
     # TODO merge set_correct_responses_by_irony with set_correct_responses
     def set_correct_responses_by_irony(self):
-        query = text('''
-            SELECT  count(trials_1.user_id), irony_type, trials_2.user_response = trials_1.user_response AS correct
-            FROM trials_1, trials_2, stimuli
-            WHERE trials_1.user_id = trials_2.user_id and
-            sentence_block != 'PB' and
-            sentence_block != 'DISTR' and
-            trials_1.stimuli_id = trials_2.stimuli_id
-            and stimuli.id = trials_1.stimuli_id
-            and stimuli.id = trials_2.stimuli_id group by irony_type, correct;
-        ''')
         response = {}
-        print self.conn.execute(query).fetchall()
-        for row in self.conn.execute(query).fetchall():
+        for row in self.conn.execute(self.query.get_correct_responses_by_irony_sql()).fetchall():
             if row[2] == 0 and row[1] == 'I':
                 response['Ironic_Diff-Resp'] = row[0]
             if row[2] == 1 and row[1] == 'I':
@@ -155,8 +178,11 @@ class FeedJson:
 
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
-feedJson.set_user_response()
-feedJson.set_ttest_response()
+feedJson.set_ttest_response(feedJson.get_trials1_response(), 'ttest.json')
+feedJson.set_ttest_response(feedJson.get_trials1_by_ironyType(), 'ttestByIronyType.json')
+feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW(), 'ttest_tr1_tr2.json')
+feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW_IT(), 'ttest_tr1_tr2_ironyType.json')
 feedJson.set_correct_responses()
 feedJson.set_correct_responses_by_context()
 feedJson.set_correct_responses_by_irony()
+
