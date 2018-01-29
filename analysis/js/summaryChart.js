@@ -3,6 +3,7 @@ $(function() {
     var ctx1 = document.getElementById("summaryChart");
     var ctx2 = document.getElementById("correctResponse");
     var ctx3 = document.getElementById("correctResponseByContext");
+    var ctx4 = document.getElementById("correctResponseByIrony");
 
     options = {
         legend: {
@@ -58,5 +59,19 @@ $(function() {
             options: options
         });
     });
+    $.getJSON("json/correctResponseByIrony.json", function (object) {
+        var myChart = new Chart(ctx4, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: Object.values(object),
+                    backgroundColor: ["#FF4136", "#01FF70","#e8c3b9","#2ECC40"]
+                }],
+                labels: Object.keys(object)
+            },
+            options: options
+        });
+    });
+
 });
 
