@@ -50,6 +50,22 @@ class FeedJson:
         }
         return translated_value[value]
 
+    def __get_tr1_tr2_header(self, value):
+        translated_value = {
+            '==': 'is positive',
+            '!=': 'is not positive'
+        }
+        return translated_value[value]
+
+    def __get_tr1_tr2_IT_header(self, value):
+        translated_value = {
+            '==I': 'is positive, Ironic',
+            '!=I': 'is not positive, Ironic',
+            '==S': 'is positive, Sarcastic',
+            '!=S': 'is not positive, Sarcastic'
+        }
+        return translated_value[value]
+
     def set_summary(self):
         # query to get the summary
         json_data = {}
@@ -63,19 +79,54 @@ class FeedJson:
             json_data[self.__get_trials1_header(r[0] + r[1] + r[2])] = r[3]
         self.__write_json_file('trials1_data.json', json_data)
 
-    def get_user_response(self):
+    def get_trials1_response(self):
         # query to get the users' responses divided by stimuli-context and trials_1-user_response
         tr1_resp = {}
         for context in ['P', 'N']:
             for user_response in ['PA', 'NA']:
-                query = self.query.get_query(context, user_response)
+                query = self.query.get_trials1_response_sql(context, user_response)
                 # TODO self.conn.execute(query).fetchall() should be a private method
                 tpls = self.conn.execute(query).fetchall()
                 tr1_resp[self.__get_summary_value(context + user_response)] = [x[1] for x in tpls]
         self.__write_json_file('userResponse.json', tr1_resp)
         return tr1_resp
 
-    def set_ttest_response(self, series):
+    def get_trials1_by_ironyType(self):
+        tr1_resp = {}
+        for context in ['P', 'N']:
+            for user_response in ['PA', 'NA']:
+                for ironyType in ['I', 'S']:
+                    query = self.query.get_trials1_by_ironyType_sql(context, user_response, ironyType)
+                    # TODO self.conn.execute(query).fetchall() should be a private method
+                    tpls = self.conn.execute(query).fetchall()
+                    tr1_resp[self.__get_trials1_header(context + ironyType + user_response)] = [x[1] for x in tpls]
+        self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def get_tr1_tr2_by_TW(self):
+        tr1_resp = {}
+        for missing_TW in ['==', '!=']:
+            query = self.query.get_tr1_tr2_by_TW_sql(missing_TW)
+            print query
+            # TODO self.conn.execute(query).fetchall() should be a private method
+            tpls = self.conn.execute(query).fetchall()
+            tr1_resp[self.__get_tr1_tr2_header(missing_TW)] = [x[1] for x in tpls]
+        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def get_tr1_tr2_by_TW_IT(self):
+        tr1_resp = {}
+        for missing_TW in ['==', '!=']:
+            for irony_type in ['I', 'S']:
+                query = self.query.get_tr1_tr2_by_TW_IT_sql(missing_TW, irony_type)
+                print query
+                # TODO self.conn.execute(query).fetchall() should be a private method
+                tpls = self.conn.execute(query).fetchall()
+                tr1_resp[self.__get_tr1_tr2_IT_header(missing_TW + irony_type)] = [x[1] for x in tpls]
+        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def set_ttest_response(self, series, file_name):
         # Method to get the t-test between two samples
         from scipy.stats import ttest_ind
         from itertools import combinations
@@ -85,8 +136,8 @@ class FeedJson:
             for key2 in series:
                 if key1 != key2:
                     t, p = ttest_ind(series[key1], series[key2], equal_var=True)
-                    tr1_tt['data'].append([key1, key2, float(t), p])
-        self.__write_json_file('ttest.json', tr1_tt)
+                    tr1_tt['data'].append([key1, key2, round(float(t), 5), round(p, 5)])
+        self.__write_json_file(file_name, tr1_tt)
 
     def set_correct_responses(self):
         response = {}
@@ -127,9 +178,10 @@ class FeedJson:
 
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
-feedJson.set_ttest_response(feedJson.get_user_response())
-print feedJson.get_user_response()
-print feedJson.set_summary_trials1_by_context_ironyType()
+feedJson.set_ttest_response(feedJson.get_trials1_response(), 'ttest.json')
+feedJson.set_ttest_response(feedJson.get_trials1_by_ironyType(), 'ttestByIronyType.json')
+feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW(), 'ttest_tr1_tr2.json')
+feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW_IT(), 'ttest_tr1_tr2_ironyType.json')
 feedJson.set_correct_responses()
 feedJson.set_correct_responses_by_context()
 feedJson.set_correct_responses_by_irony()

@@ -1,7 +1,7 @@
 
 class Query():
 
-    def get_query(self, context, user_response):
+    def get_trials1_response_sql(self, context, user_response):
         return '''
             SELECT user.id, count(stimuli.id)
             FROM user
@@ -9,6 +9,70 @@ class Query():
             LEFT JOIN stimuli ON stimuli.id = trials_1.stimuli_id and stimuli.context = '%s' and stimuli.sentence_block != 'PB'
             GROUP BY user_id;
         ''' % (user_response, context)
+
+    def get_trials1_by_ironyType_sql(self, context, user_response, ironyType):
+        return '''
+            SELECT user.id, count(stimuli.id)
+            FROM user
+            LEFT JOIN trials_1 
+                ON trials_1.user_id = user.id and trials_1.user_response = '%s'
+            LEFT JOIN stimuli ON 
+                stimuli.id = trials_1.stimuli_id and stimuli.context = '%s' 
+                and stimuli.sentence_block != 'PB' AND irony_type = '%s'
+            GROUP BY user_id;
+        ''' % (user_response, context, ironyType)
+
+    def get_tr1_tr2_by_TW_sql(self, missing_TW):
+        return '''
+            SELECT
+                user.id,
+                count(stimuli.id)
+            FROM
+                user
+            LEFT JOIN trials_1
+                ON
+                    user.id = trials_1.user_id
+            LEFT JOIN trials_2
+                ON
+                    trials_1.user_id = trials_2.user_id AND
+                    trials_2.user_response != trials_1.user_response AND
+                    trials_1.stimuli_id = trials_2.stimuli_id
+            LEFT JOIN stimuli
+                ON
+                    stimuli.sentence_block != 'PB' AND
+                    stimuli.context = 'N' AND
+                    stimuli.id = trials_1.stimuli_id AND
+                    stimuli.id = trials_2.stimuli_id AND
+                    stimuli.target_word_p %s missing_TW --to change
+            GROUP BY trials_1.user_id;
+        ''' % (missing_TW)
+
+    def get_tr1_tr2_by_TW_IT_sql(self, missing_TW, irony_type):
+        return '''
+            SELECT
+                user.id,
+                count(stimuli.id)
+            FROM
+                user
+            LEFT JOIN trials_1
+                ON 
+                    user.id = trials_1.user_id
+            LEFT JOIN trials_2
+                ON 
+                    trials_1.user_id = trials_2.user_id AND
+                    trials_2.user_response != trials_1.user_response AND
+                    trials_1.stimuli_id = trials_2.stimuli_id
+            LEFT JOIN stimuli
+                ON 
+                    sentence_block != 'PB' AND 
+                    context = 'N' AND 
+                    stimuli.id = trials_1.stimuli_id AND 
+                    stimuli.id = trials_2.stimuli_id AND
+                    stimuli.target_word_p %s missing_TW AND --variable 0/1
+                    stimuli.irony_type = '%s' -- variable I/S
+            GROUP BY
+                trials_1.user_id;
+        ''' % (missing_TW, irony_type)
 
     def get_correct_responses_sql(self):
         return '''
