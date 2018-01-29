@@ -57,35 +57,34 @@ class FeedJson:
             json_data[self.__get_summary_value(r[0] + r[1])] = r[2]
         self.__write_json_file('summary.json', json_data)
 
-    def set_trials1_data(self):
+    def set_summary_trials1_by_context_ironyType(self):
         json_data = {}
         for r in self.conn.execute(self.query.get_trials1_data_sql()).fetchall():
             json_data[self.__get_trials1_header(r[0] + r[1] + r[2])] = r[3]
         self.__write_json_file('trials1_data.json', json_data)
 
-
-    def set_user_response(self):
+    def get_user_response(self):
         # query to get the users' responses divided by stimuli-context and trials_1-user_response
-        self.tr1_resp = {}
+        tr1_resp = {}
         for context in ['P', 'N']:
             for user_response in ['PA', 'NA']:
                 query = self.query.get_query(context, user_response)
                 # TODO self.conn.execute(query).fetchall() should be a private method
                 tpls = self.conn.execute(query).fetchall()
-                self.tr1_resp[self.__get_summary_value(context + user_response)] = [x[1] for x in tpls]
-        self.__write_json_file('userResponse.json', self.tr1_resp)
+                tr1_resp[self.__get_summary_value(context + user_response)] = [x[1] for x in tpls]
+        self.__write_json_file('userResponse.json', tr1_resp)
+        return tr1_resp
 
-    def set_ttest_response(self):
+    def set_ttest_response(self, series):
         # Method to get the t-test between two samples
         from scipy.stats import ttest_ind
         from itertools import combinations
         import numpy as np
         tr1_tt = {'data': []}
-        print self.tr1_resp
-        for key1 in self.tr1_resp:
-            for key2 in self.tr1_resp:
+        for key1 in series:
+            for key2 in series:
                 if key1 != key2:
-                    t, p = ttest_ind(self.tr1_resp[key1], self.tr1_resp[key2], equal_var=True)
+                    t, p = ttest_ind(series[key1], series[key2], equal_var=True)
                     tr1_tt['data'].append([key1, key2, float(t), p])
         self.__write_json_file('ttest.json', tr1_tt)
 
@@ -128,9 +127,10 @@ class FeedJson:
 
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
-feedJson.set_user_response()
-feedJson.set_ttest_response()
+feedJson.set_ttest_response(feedJson.get_user_response())
+print feedJson.get_user_response()
+print feedJson.set_summary_trials1_by_context_ironyType()
 feedJson.set_correct_responses()
 feedJson.set_correct_responses_by_context()
 feedJson.set_correct_responses_by_irony()
-feedJson.set_trials1_data()
+
