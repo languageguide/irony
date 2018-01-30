@@ -1,4 +1,7 @@
 $(function() {
+
+    $.ajaxSetup({ cache: false });
+
     $.getJSON('./json/ttest.json', function (object) {
 
         $('#example').DataTable( object );
@@ -17,5 +20,4 @@ $(function() {
 
     });
 
-    
 });
