@@ -160,21 +160,69 @@ SELECT
     user.id,
     count(stimuli.id),
     context, 
-    correct,
     stimuli.irony_type
 FROM
     user, trials_1, trials_2, stimuli
 WHERE 
     user.id = trials_1.user_id AND
     trials_1.user_id = trials_2.user_id AND
-    trials_2.user_response != trials_1.user_response
+    trials_2.user_response != trials_1.user_response AND
     trials_1.stimuli_id = trials_2.stimuli_id AND 
     sentence_block != 'PB' AND 
     context = 'N' AND 
     stimuli.id = trials_1.stimuli_id AND 
     stimuli.id = trials_2.stimuli_id AND
-    stimuli.target_word_p = missing_TW AND --variable
-    stimuli.irony_type = 'S' -- variable
+    stimuli.target_word_p != missing_TW AND --variable 0/1
+    stimuli.irony_type = 'I' -- variable I/S
 GROUP BY
     trials_1.user_id;
+
+--- ---------------
+-------------------
+
+SELECT
+    user.id,
+    count(stimuli.id)
+FROM
+    user, trials_1, trials_2, stimuli
+WHERE 
+    user.id = trials_1.user_id AND
+    trials_1.user_id = trials_2.user_id AND
+    trials_2.user_response != trials_1.user_response AND
+    trials_1.stimuli_id = trials_2.stimuli_id AND 
+    sentence_block != 'PB' AND 
+    context = 'N' AND 
+    stimuli.id = trials_1.stimuli_id AND 
+    stimuli.id = trials_2.stimuli_id AND
+    stimuli.target_word_p != missing_TW AND --variable 0/1
+    stimuli.irony_type = 'I' -- variable I/S
+GROUP BY
+    trials_1.user_id;
+----------------------
+
+SELECT
+    user.id,
+    count(stimuli.id)
+FROM
+    user
+LEFT JOIN trials_1
+    ON 
+        user.id = trials_1.user_id
+LEFT JOIN trials_2
+    ON 
+        trials_1.user_id = trials_2.user_id AND
+        trials_2.user_response != trials_1.user_response AND
+        trials_1.stimuli_id = trials_2.stimuli_id
+LEFT JOIN stimuli
+    ON 
+        sentence_block != 'PB' AND 
+        context = 'N' AND 
+        stimuli.id = trials_1.stimuli_id AND 
+        stimuli.id = trials_2.stimuli_id AND
+        stimuli.target_word_p == missing_TW AND --variable 0/1
+        stimuli.irony_type = 'S' -- variable I/S
+GROUP BY
+    trials_1.user_id;
+    
+
 
