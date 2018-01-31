@@ -134,7 +134,7 @@ class FeedJson:
     def set_ttest_response(self, series, file_name):
         # Method to get the t-test between two samples
         from scipy.stats import ttest_ind
-        from numpy import mean
+        from numpy import mean, std
         from itertools import combinations
         import numpy as np
         from math import isnan
@@ -142,16 +142,18 @@ class FeedJson:
         for key1 in series:
             for key2 in series:
                 if key1 != key2:
-                    t, p = ttest_ind(series[key1], series[key2], equal_var=True)
-                    if isnan(t):
-                        t = "NaN"
-                        p = "NaN"
-                    else:
-                        t = round(t, 5)
-                        p = round(p, 5)
                     mean1 = round(mean(series[key1]), 2)
                     mean2 = round(mean(series[key2]), 2)
-                    tr1_tt['data'].append([key1, key2, t, p, mean1, mean2])
+                    std1 = round(std(series[key1]), 2)
+                    std2 = round(std(series[key2]), 2)
+                    if mean1 != 0 and mean2 != 0:
+                        t, p = ttest_ind(series[key1], series[key2], equal_var=True)
+                        t = round(t, 5)
+                        p = round(p, 5)
+                    else:
+                        t = "NaN"
+                        p = "NaN"
+                    tr1_tt['data'].append([key1, key2, t, p, mean1, std1, mean2, std2])
         self.__write_json_file(file_name, tr1_tt)
 
     def set_correct_responses(self):

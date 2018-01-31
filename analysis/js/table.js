@@ -15,6 +15,7 @@ $(function() {
     });
 
     $.getJSON('./json/ttest_tr1_tr2_ironyType.json', function (object) {
+        console.log(object);
 
         $('#tr1-tr2-irony').DataTable( object );
 
