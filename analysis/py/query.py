@@ -47,7 +47,7 @@ class Query():
             GROUP BY trials_1.user_id;
         ''' % (missing_TW)
 
-    def get_tr1_tr2_by_TW_IT_sql(self, missing_TW, irony_type):
+    def get_tr1_tr2_by_TW_IT_sql(self, context, missing_TW, irony_type):
         return '''
             SELECT
                 user.id,
@@ -65,14 +65,14 @@ class Query():
             LEFT JOIN stimuli
                 ON 
                     sentence_block != 'PB' AND 
-                    context = 'N' AND 
+                    context = '%s' AND 
                     stimuli.id = trials_1.stimuli_id AND 
                     stimuli.id = trials_2.stimuli_id AND
                     stimuli.target_word_p %s missing_TW AND --variable 0/1
                     stimuli.irony_type = '%s' -- variable I/S
             GROUP BY
                 trials_1.user_id;
-        ''' % (missing_TW, irony_type)
+        ''' % (context, missing_TW, irony_type)
 
     def get_correct_responses_sql(self):
         return '''

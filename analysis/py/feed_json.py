@@ -59,10 +59,14 @@ class FeedJson:
 
     def __get_tr1_tr2_IT_header(self, value):
         translated_value = {
-            '==I': 'is positive, Ironic',
-            '!=I': 'is not positive, Ironic',
-            '==S': 'is positive, Sarcastic',
-            '!=S': 'is not positive, Sarcastic'
+            'P==I': 'PosCont, is positive, Ironic',
+            'P!=I': 'PosCont, is not positive, Ironic',
+            'P==S': 'PosCont, is positive, Sarcastic',
+            'P!=S': 'PosCont, is not positive, Sarcastic',
+            'N==I': 'NegCont, is positive, Ironic',
+            'N!=I': 'NegCont, is not positive, Ironic',
+            'N==S': 'NegCont, is positive, Sarcastic',
+            'N!=S': 'NegCont, is not positive, Sarcastic'
         }
         return translated_value[value]
 
@@ -118,11 +122,12 @@ class FeedJson:
         tr1_resp = {}
         for missing_TW in ['==', '!=']:
             for irony_type in ['I', 'S']:
-                query = self.query.get_tr1_tr2_by_TW_IT_sql(missing_TW, irony_type)
-                print query
-                # TODO self.conn.execute(query).fetchall() should be a private method
-                tpls = self.conn.execute(query).fetchall()
-                tr1_resp[self.__get_tr1_tr2_IT_header(missing_TW + irony_type)] = [x[1] for x in tpls]
+                for context in ['P', 'N']:
+                    query = self.query.get_tr1_tr2_by_TW_IT_sql(context,missing_TW, irony_type)
+                    print query
+                    # TODO self.conn.execute(query).fetchall() should be a private method
+                    tpls = self.conn.execute(query).fetchall()
+                    tr1_resp[self.__get_tr1_tr2_IT_header(context + missing_TW + irony_type)] = [x[1] for x in tpls]
         # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
         return tr1_resp
 
