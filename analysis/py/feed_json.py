@@ -132,14 +132,21 @@ class FeedJson:
         from numpy import mean
         from itertools import combinations
         import numpy as np
+        from math import isnan
         tr1_tt = {'data': []}
         for key1 in series:
             for key2 in series:
                 if key1 != key2:
                     t, p = ttest_ind(series[key1], series[key2], equal_var=True)
+                    if isnan(t):
+                        t = "NaN"
+                        p = "NaN"
+                    else:
+                        t = round(t, 5)
+                        p = round(p, 5)
                     mean1 = round(mean(series[key1]), 2)
                     mean2 = round(mean(series[key2]), 2)
-                    tr1_tt['data'].append([key1, key2, round(t, 5), round(p, 5), mean1, mean2])
+                    tr1_tt['data'].append([key1, key2, t, p, mean1, mean2])
         self.__write_json_file(file_name, tr1_tt)
 
     def set_correct_responses(self):
