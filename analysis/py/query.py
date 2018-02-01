@@ -123,3 +123,25 @@ class Query():
             WHERE stimuli.id = trials_1.stimuli_id and stimuli.sentence_block != 'PB'
             GROUP BY stimuli.context, trials_1.user_response;
         '''
+
+    def get_negContVsPosCont_sql(self, context):
+        return '''
+            SELECT
+                user.id,
+                count(stimuli.id)
+            FROM
+                user
+            LEFT JOIN trials_1 ON
+                user.id = trials_1.user_id
+            LEFT JOIN trials_2 ON
+                trials_1.user_id = trials_2.user_id AND
+                trials_1.stimuli_id = trials_2.stimuli_id AND
+                trials_2.user_response != trials_1.user_response
+            LEFT JOIN stimuli ON
+                stimuli.sentence_block != 'PB' AND
+                stimuli.id = trials_1.stimuli_id AND
+                stimuli.context = '%s' AND
+                stimuli.id = trials_2.stimuli_id
+            GROUP BY
+                trials_1.user_id;
+        ''' % (context)

@@ -70,6 +70,13 @@ class FeedJson:
         }
         return translated_value[value]
 
+    def __get_negContVsPosCont_header(self, value):
+        translated_value = {
+            'P': 'PosCont',
+            'N': 'NegCont'
+        }
+        return translated_value[value]
+
     def set_summary(self):
         # query to get the summary
         json_data = {}
@@ -115,7 +122,6 @@ class FeedJson:
             # TODO self.conn.execute(query).fetchall() should be a private method
             tpls = self.conn.execute(query).fetchall()
             tr1_resp[self.__get_tr1_tr2_header(missing_TW)] = [x[1] for x in tpls]
-        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
         return tr1_resp
 
     def get_tr1_tr2_by_TW_IT(self):
@@ -124,11 +130,17 @@ class FeedJson:
             for irony_type in ['I', 'S']:
                 for context in ['P', 'N']:
                     query = self.query.get_tr1_tr2_by_TW_IT_sql(context,missing_TW, irony_type)
-                    print query
-                    # TODO self.conn.execute(query).fetchall() should be a private method
                     tpls = self.conn.execute(query).fetchall()
                     tr1_resp[self.__get_tr1_tr2_IT_header(context + missing_TW + irony_type)] = [x[1] for x in tpls]
-        # self.__write_json_file('userResponseByIronyType.json', tr1_resp)
+        return tr1_resp
+
+    def get_negContVsPosCont(self):
+        tr1_resp = {}
+        for context in ['P', 'N']:
+            query = self.query.get_negContVsPosCont_sql(context)
+            print query
+            tpls = self.conn.execute(query).fetchall()
+            tr1_resp[self.__get_negContVsPosCont_header(context)] = [x[1] for x in tpls]
         return tr1_resp
 
     def set_ttest_response(self, series, file_name):
@@ -199,6 +211,7 @@ feedJson.set_ttest_response(feedJson.get_trials1_response(), 'ttest.json')
 feedJson.set_ttest_response(feedJson.get_trials1_by_ironyType(), 'ttestByIronyType.json')
 feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW(), 'ttest_tr1_tr2.json')
 feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW_IT(), 'ttest_tr1_tr2_ironyType.json')
+feedJson.set_ttest_response(feedJson.get_negContVsPosCont(), 'negContVsPosCont.json')
 feedJson.set_correct_responses()
 feedJson.set_correct_responses_by_context()
 feedJson.set_correct_responses_by_irony()
