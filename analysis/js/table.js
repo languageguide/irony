@@ -18,5 +18,9 @@ $(function() {
         $('#negContVsPosCont').DataTable( object );
     });
 
+    $.getJSON('./json/liter_vs_ironic.json', function (object) {
+        $('#liter-vs-ironic').DataTable( object );
+    });
+
 negContVsPosCont
 });
