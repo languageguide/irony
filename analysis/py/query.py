@@ -1,6 +1,27 @@
 
 class Query():
 
+    def get_trials1_liter_vs_ironic_sql(self, opts):
+        return '''
+            SELECT
+                user.id, count(stimuli.id)
+            FROM
+                user
+            LEFT JOIN trials_1
+                ON
+                    trials_1.user_id = user.id
+            LEFT JOIN stimuli
+                ON
+                    stimuli.id = trials_1.stimuli_id AND
+                    stimuli.sentence_block != 'PB' AND
+                (
+                    (stimuli.context = '%s' AND trials_1.user_response = '%s' )
+                        OR
+                    (stimuli.context = '%s' AND trials_1.user_response = '%s' )
+                )
+            GROUP BY user_id;
+        ''' % (opts[0], opts[1], opts[2], opts[3])
+
     def get_trials1_response_sql(self, context, user_response):
         return '''
             SELECT user.id, count(stimuli.id)

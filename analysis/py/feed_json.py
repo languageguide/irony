@@ -77,6 +77,14 @@ class FeedJson:
         }
         return translated_value[value]
 
+    def __get_trials1_liter_vs_ironic_header(self, values):
+        value = values[0] + values[1]
+        translated_value = {
+            'NNA': 'NegCont-NegAdj_PosCont-PosAdj',
+            'NPA': 'NegCont-PosAdj_PosCont-NegAdj'
+        }
+        return translated_value[value]
+
     def set_summary(self):
         # query to get the summary
         json_data = {}
@@ -102,6 +110,14 @@ class FeedJson:
         self.__write_json_file('userResponse.json', tr1_resp)
         return tr1_resp
 
+    def get_trials1_liter_vs_ironic(self):
+        result = {}
+        for opt in [['N', 'NA', 'P', 'PA'], ['N', 'PA', 'P', 'NA']]:
+            query = self.query.get_trials1_liter_vs_ironic_sql(opt)
+            tpls = self.conn.execute(query).fetchall()
+            result[self.__get_trials1_liter_vs_ironic_header(opt)] = [x[1] for x in tpls]
+        return result
+
     def get_trials1_by_ironyType(self):
         tr1_resp = {}
         for context in ['P', 'N']:
@@ -118,8 +134,6 @@ class FeedJson:
         tr1_resp = {}
         for missing_TW in ['==', '!=']:
             query = self.query.get_tr1_tr2_by_TW_sql(missing_TW)
-            print query
-            # TODO self.conn.execute(query).fetchall() should be a private method
             tpls = self.conn.execute(query).fetchall()
             tr1_resp[self.__get_tr1_tr2_header(missing_TW)] = [x[1] for x in tpls]
         return tr1_resp
@@ -207,6 +221,7 @@ class FeedJson:
 
 feedJson = FeedJson('irony.db')
 feedJson.set_summary()
+feedJson.set_ttest_response(feedJson.get_trials1_liter_vs_ironic(), 'liter_vs_ironic.json')
 feedJson.set_ttest_response(feedJson.get_trials1_response(), 'ttest.json')
 feedJson.set_ttest_response(feedJson.get_trials1_by_ironyType(), 'ttestByIronyType.json')
 feedJson.set_ttest_response(feedJson.get_tr1_tr2_by_TW(), 'ttest_tr1_tr2.json')
